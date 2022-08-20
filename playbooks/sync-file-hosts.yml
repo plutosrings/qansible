@@ -1,0 +1,16 @@
+---
+  - name: Collect Facts from hosts, store as JSON files
+    hosts: all
+    become: no
+    gather_facts: yes
+    vars:
+      fact_dir: "./facts/"
+      live: false
+
+    tasks:
+      - name: Save Hostname Facts to file
+        copy:
+          content: "{{ ansible_facts | to_nice_json }}"
+          dest: "{{ fact_dir }}{{ ansible_fqdn }}.json"
+        delegate_to: localhost
+          

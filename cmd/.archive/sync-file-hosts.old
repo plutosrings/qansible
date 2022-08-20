@@ -1,0 +1,37 @@
+#!/bin/bash -vx
+
+INVENTORY_NAME="hosts"
+
+
+function die()
+{
+    echo "[FATAL] $1"
+    exit -1
+
+}
+
+EXEC_PATH="$(readlink -f $(dirname $0))"
+PATH_ANSIBLE="$EXEC_PATH/../"
+PLAYBOOK_NAME="$(basename $0).yml"
+PATH_PLAYBOOKS="$PATH_ANSIBLE/playbooks/"
+PATH_PLAYBOOK="$PATH_PLAYBOOKS/$PLAYBOOK_NAME"
+PATH_INVENTORY="$PATH_ANSIBLE/inventory/$INVENTORY_NAME"
+
+PATH_VARS="$PATH_ANSIBLE/vars/$PLAYBOOK_NAME"
+
+[[ -e  "$PATH_PLAYBOOK" ]] || die "Cannot find Playbook: $PATH_PLAYBOOK"
+[[ -e  "$PATH_INVENTORY" ]] || die "Cannot find Inventory: $PATH_INVENTORY"
+
+OPT_PLAYBOOK_VARS=""
+[[ -e "$PATH_VARS" ]] && OPT_PLAYBOOK_VARS="-e @$PATH_VARS"
+
+
+CMD="ansible-playbook -i $PATH_INVENTORY $OPT_PLAYBOOK_VARS $PATH_PLAYBOOK"
+
+echo $CMD
+
+$CMD
+
+
+
+

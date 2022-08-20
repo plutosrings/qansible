@@ -1,0 +1,16 @@
+---
+  - name: BARE TEMPLATE -- v0.0.1 -- 20220820
+    hosts: all
+    become: no
+    gather_facts: yes
+    vars:
+      fact_dir: "./facts/"
+      live: false
+
+    tasks:
+      - name: Save Hostname Facts to file yeah
+        copy:
+          content: "{{ ansible_facts | to_nice_json }}"
+          dest: "{{ fact_dir }}{{ ansible_fqdn }}.json"
+        delegate_to: localhost
+          

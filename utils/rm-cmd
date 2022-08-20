@@ -1,0 +1,59 @@
+#!/bin/bash 
+
+function die()
+{
+    echo "[FATAL] $1"
+    exit -1
+
+}
+
+
+(( $# == 1 )) || die "Must pass exactly 1 argument, the 'base-name' for the qAnsible command" 
+
+
+
+
+EXEC_PATH="$(readlink -f $(dirname $0))"
+PATH_ANSIBLE="$EXEC_PATH/../"
+DEL_BASE_NAME="$1"
+
+
+PATH_CMD="$PATH_ANSIBLE/cmd/"
+PATH_INVENTORY="$PATH_ANSIBLE/inventory/"
+PATH_PLAYBOOK="$PATH_ANSIBLE/playbooks/"
+PATH_VARS="$PATH_ANSIBLE/vars/"
+
+
+read -p "Are you sure you wish to delete qAnsible: $DEL_BASE_NAME ? [y/N]" -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    echo "Not Deleting..."
+    exit 1
+fi
+echo "Ok, deleting: $DEL_BASE_NAME"
+
+CMD="unlink $PATH_CMD/$DEL_BASE_NAME"
+echo "$CMD"
+$CMD || die "$CMD Failed..."
+
+CMD="rm -rf $PATH_INVENTORY/$DEL_BASE_NAME.hosts"
+echo "$CMD"
+$CMD || die "$CMD Failed..."
+
+CMD="rm -rf  $PATH_PLAYBOOK/$DEL_BASE_NAME.yml"
+echo "$CMD"
+$CMD || die "$CMD Failed..."
+
+CMD="rm -rf  $PATH_VARS/$DEL_BASE_NAME.yml"
+echo "$CMD"
+$CMD || die "$CMD Failed..."
+
+echo "Removed qAnsible Skeleton for: $DEL_BASE_NAME"
+
+
+
+
+
+
+

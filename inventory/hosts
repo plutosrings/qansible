@@ -1,0 +1,2 @@
+[collect-facts]
+localhost ansible_connection=local

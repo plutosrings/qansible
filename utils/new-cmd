@@ -1,0 +1,50 @@
+#!/bin/bash 
+
+function die()
+{
+    echo "[FATAL] $1"
+    exit -1
+
+}
+
+
+(( $# == 1 )) || die "Must pass exactly 1 argument, the 'base-name' for the qAnsible command" 
+
+
+
+
+EXEC_PATH="$(readlink -f $(dirname $0))"
+PATH_ANSIBLE="$EXEC_PATH/../"
+NEW_BASE_NAME="$1"
+
+
+PATH_CMD="$PATH_ANSIBLE/cmd/"
+PATH_INVENTORY="$PATH_ANSIBLE/inventory/"
+PATH_PLAYBOOK="$PATH_ANSIBLE/playbooks/"
+PATH_VARS="$PATH_ANSIBLE/vars/"
+
+export die
+CMD="ln -rs $PATH_CMD/.template $PATH_CMD/$NEW_BASE_NAME"
+echo "$CMD"
+$CMD || die "$CMD Failed..."
+
+CMD="cp $PATH_INVENTORY/.template $PATH_INVENTORY/$NEW_BASE_NAME.hosts"
+echo "$CMD"
+$CMD || die "$CMD Failed..."
+
+CMD="cp $PATH_PLAYBOOK/.template $PATH_PLAYBOOK/$NEW_BASE_NAME.yml"
+echo "$CMD"
+$CMD || die "$CMD Failed..."
+
+CMD="cp $PATH_VARS/.template $PATH_VARS/$NEW_BASE_NAME.yml"
+echo "$CMD"
+$CMD || die "$CMD Failed..."
+
+echo "Created qAnsible Skeleton for: $NEW_BASE_NAME"
+
+
+
+
+
+
+
