@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash
 
 
 
@@ -20,7 +20,8 @@ PATH_PLAYBOOKS="$PATH_ANSIBLE/playbooks/"
 PATH_PLAYBOOK="$PATH_PLAYBOOKS/$PLAYBOOK_NAME"
 PATH_INVENTORY="$PATH_ANSIBLE/inventory/$INVENTORY_NAME"
 
-PATH_VARS="$PATH_ANSIBLE/vars/$PLAYBOOK_NAME"
+PATH_VARS="$PATH_ANSIBLE/vars/$BASE_NAME.vars.yml"
+PATH_VAULT="$PATH_ANSIBLE/.vaults/$PLAYBOOK_NAME"
 
 [[ -e  "$PATH_PLAYBOOK" ]] || die "Cannot find Playbook: $PATH_PLAYBOOK"
 [[ -e  "$PATH_INVENTORY" ]] || die "Cannot find Inventory: $PATH_INVENTORY"
@@ -28,12 +29,14 @@ PATH_VARS="$PATH_ANSIBLE/vars/$PLAYBOOK_NAME"
 OPT_PLAYBOOK_VARS=""
 [[ -e "$PATH_VARS" ]] && OPT_PLAYBOOK_VARS="-e @$PATH_VARS"
 
+[[ -e "$PATH_VAULT" ]] && OPT_PLAYBOOK_VARS="-e @$PATH_VAULT --ask-vault-password"
+
 
 CMD="ansible-playbook -i $PATH_INVENTORY $OPT_PLAYBOOK_VARS $PATH_PLAYBOOK"
 
-echo $CMD
+echo $CMD $@
 
-$CMD
+$CMD $@
 
 
 

@@ -36,7 +36,7 @@ CMD="cp $PATH_PLAYBOOK/.template $PATH_PLAYBOOK/$NEW_BASE_NAME.yml"
 echo "$CMD"
 $CMD || die "$CMD Failed..."
 
-CMD="cp $PATH_VARS/.template $PATH_VARS/$NEW_BASE_NAME.yml"
+CMD="cp $PATH_VARS/.template $PATH_VARS/$NEW_BASE_NAME.vars.yml"
 echo "$CMD"
 $CMD || die "$CMD Failed..."
 

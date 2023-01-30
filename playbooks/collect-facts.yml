@@ -1,16 +1,84 @@
 ---
-  - name: BARE TEMPLATE -- v0.0.1 -- 20220820
-    hosts: all
-    become: no
-    gather_facts: yes
-    vars:
-      fact_dir: "./facts/"
-      live: false
+    - name: BARE TEMPLATE -- v0.0.1 -- 20220820
+      hosts: all
+      become: no
+      gather_facts: yes
+      vars:
+        fact_dir: "{{ playbook_dir }}/../facts/"
+        live: false
+  
+      tasks:
+        #- name: get service facts
+        #  service_facts:
+  
+        - name: list virtual machines
+          virt:
+            command: list_vms
+          register: vm_list
+  
+        - name: list virtual machines
+          debug:
+            var: vm_list
+  
+        - name: setfact vm_list
+          set_fact:
+            vm_list: "{{ vm_list }}"
+            cacheable: True
+  
+########################################
+        - name: Get Status for virtual machines
+          virt:
+            command: status
+            name: "{{ item }}"
+          register: vm_status_xml 
+          loop: "{{ vm_list.list_vms }}"
+  
+        #- name: list virtual machines
+        #  debug:
+        #    var: vm_info_xml
+  
+        - name: setfact vm status
+          set_fact:
+            #vm_info: "{{ item.get_xml|ansible.utils.from_xml }}"
+            vm_status: "{{ vm_status_xml }}"
+            cacheable: True
+          #loop: "{{ vm_info_xml.results }}"
 
-    tasks:
-      - name: Save Hostname Facts to file yeah
-        copy:
-          content: "{{ ansible_facts | to_nice_json }}"
-          dest: "{{ fact_dir }}{{ ansible_fqdn }}.json"
-        delegate_to: localhost
-          
+########################################
+        - name: GetXML for virtual machines
+          virt:
+            command: get_xml
+            name: "{{ item }}"
+          register: vm_info_xml 
+          loop: "{{ vm_list.list_vms }}"
+  
+        #- name: list virtual machines
+        #  debug:
+        #    var: vm_info_xml
+  
+        - name: setfact vm_info
+          set_fact:
+            #vm_info: "{{ item.get_xml|ansible.utils.from_xml }}"
+            vm_info: "{{ vm_info_xml }}"
+            cacheable: True
+          #loop: "{{ vm_info_xml.results }}"
+########################################
+        - name: Virtualization nodeinfo
+          virt:
+            command: nodeinfo
+            #name: vm_list
+          register: vm_hostinfo
+  
+        - name: setfact vm_hostinfo
+          set_fact:
+            vm_hostinfo: "{{ vm_hostinfo }}"
+            cacheable: True
+      
+  #########################################
+        - name: Save Hostname Facts to file yeah
+          copy:
+            content: "{{ ansible_facts | to_nice_json }}"
+            dest: "{{ fact_dir }}{{ ansible_fqdn }}.json"
+          delegate_to: localhost
+            
+  
